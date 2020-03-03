@@ -1,0 +1,29 @@
+*:{$PORT} *:80 {
+    root /app/{$PUBLIC_DIR}
+
+    log / stdout "\"{method} {uri}\" => {status} ({size})" {
+        ipmask 255.255.0.0 ffff:ffff:ffff:ff00::
+        except /$
+        except /metrics
+        except /health
+    }
+    
+    header / {
+        # Enable cross-site filter (XSS) and tell browser to block detected attacks
+        X-XSS-Protection "1; mode=block"
+        # Prevent some browsers from MIME-sniffing a response away from the declared Content-Type
+        X-Content-Type-Options "nosniff"
+        # Disallow the site to be rendered within a frame (clickjacking protection)
+        X-Frame-Options "DENY"
+    }
+
+    rewrite {
+        to {path} {path}/ /index.php?{query}
+    }
+
+    fastcgi / 127.0.0.1:9000 php
+
+    tls off
+    gzip
+    push
+}
