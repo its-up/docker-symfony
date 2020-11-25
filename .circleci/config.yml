@@ -7,10 +7,6 @@ workflows:
         jobs:
             -   docker/publish:
                     image: itsupcom/docker-symfony
-                    tag: "7.3"
-                    extra_build_args: '--build-arg PHP_VERSION=7.3'
-            -   docker/publish:
-                    image: itsupcom/docker-symfony
                     tag: "7.4"
                     extra_build_args: '--build-arg PHP_VERSION=7.4'
             -   docker/publish:

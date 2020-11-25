@@ -1,4 +1,5 @@
 ARG PHP_VERSION=7.4
+ARG CADDY_VERSION=2
 
 # -----------------------------------------------------
 # Caddy Install
@@ -16,7 +17,7 @@ FROM php:$PHP_VERSION-fpm-alpine
 
 ARG PORT=9001
 ARG PUBLIC_DIR=public
-ARG DECORATE_WORKERS
+ARG NO_FREETYPE
 
 ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
@@ -41,10 +42,6 @@ COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 
 # Composer install
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Hide decorators - only available for PHP 7.3 and above
-RUN if [[ -z "$DECORATE_WORKERS" ]]; then \
-    echo "decorate_workers_output = no" >> /usr/local/etc/php-fpm.d/docker.conf; fi
 
 # Install Packages
 RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
