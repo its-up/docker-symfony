@@ -3,17 +3,11 @@ ARG PHP_VERSION=7.4
 # -----------------------------------------------------
 # Caddy Install
 # -----------------------------------------------------
-FROM alpine as caddy
+FROM caddy:$CADDY_VERSION-builder AS builder
 
-ARG plugins=http.git,http.cache,http.expires,http.minify,http.realip
+RUN xcaddy build
 
-RUN apk --update add git curl linux-headers
-
-RUN curl --silent --show-error --fail --location \
-      --header "Accept: application/tar+gzip, application/x-gzip, application/octet-stream" -o - \
-      "https://caddyserver.com/download/linux/amd64?plugins=${plugins}&license=personal&telemetry=off" \
-    | tar --no-same-owner -C /tmp -xz caddy \
-    && chmod 0755 /tmp/caddy
+FROM caddy:$CADDY_VERSION
 
 # -----------------------------------------------------
 # App Itself
@@ -43,7 +37,7 @@ WORKDIR /app
 COPY ./manifest /
 
 # Caddy
-COPY --from=caddy /tmp/caddy /usr/local/sbin/caddy
+COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 
 # Composer install
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -62,15 +56,16 @@ RUN ulimit -n 16384
 RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community/ --allow-untrusted gnu-libiconv
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 
+# Configure GD to use freetype fonts
+RUN if [[ -z "$NO_FREETYPE" ]]; then \
+    docker-php-ext-configure gd --with-freetype --with-jpeg; fi
+
 # Install Non-Pecl Packages
 RUN docker-php-ext-install $EXT_PACKAGES
 
 # Install Pecl Packages
 RUN yes '' | pecl install -f $PECL_PACKAGES
 RUN docker-php-ext-enable $PECL_PACKAGES
-
-# Install Parallel Composer Plugin
-RUN composer global require hirak/prestissimo --no-plugins --no-scripts
 
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES

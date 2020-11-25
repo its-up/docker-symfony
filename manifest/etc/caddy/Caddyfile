@@ -1,26 +1,19 @@
-*:{$PORT} *:80 {
-    root /app/{$PUBLIC_DIR}
+:80, :{$PORT} {
+    root * /app/{$PUBLIC_DIR}
+    php_fastcgi 127.0.0.1:9000
+    file_server
 
-    log / stdout "\"{method} {uri}\" => {status} ({size})" {
-        ipmask 255.255.0.0 ffff:ffff:ffff:ff00::
-        except /$
-        except /metrics
-        except /health
-    }
-    
     header / {
         X-XSS-Protection "1; mode=block"
         X-Content-Type-Options "nosniff"
         X-Frame-Options "ALLOW"
     }
 
-    rewrite {
-        to {path} {path}/ /index.php?{query}
+    log {
+        output stdout
+        format console
     }
 
-    fastcgi / 127.0.0.1:9000 php
-
-    tls off
-    gzip
     push
+    encode gzip
 }
