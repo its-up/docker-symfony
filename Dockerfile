@@ -23,7 +23,7 @@ ENV PORT=$PORT
 ENV PUBLIC_DIR=$PUBLIC_DIR
 
 ENV REQUIRED_PACKAGES="git make zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c php7-amqp icu libsodium-dev oniguruma-dev freetype-dev libpng-dev libjpeg-turbo-dev libxml2-dev libacl libmagic imagemagick-dev imagemagick jpegoptim optipng pngquant"
-ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python py-pip pcre-dev rabbitmq-c-dev icu-dev"
+ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev rabbitmq-c-dev icu-dev"
 ENV PECL_PACKAGES="redis amqp apcu mongodb imagick"
 ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif sodium gd sysvmsg sysvsem sysvshm"
 
