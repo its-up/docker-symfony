@@ -46,7 +46,7 @@ COPY ./manifest /
 COPY --from=caddy /tmp/caddy /usr/local/sbin/caddy
 
 # Composer install
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Hide decorators - only available for PHP 7.3 and above
 RUN if [[ -z "$DECORATE_WORKERS" ]]; then \
