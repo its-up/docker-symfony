@@ -1,7 +1,7 @@
 :80, :{$PORT} {
     root * /app/{$PUBLIC_DIR}
 
-    reverse_proxy /(php-fpm-status|php-fpm-ping) 127.0.0.1:9000 {
+    reverse_proxy /php-fpm-status 127.0.0.1:9000 {
         transport fastcgi {
             split .php
         }
