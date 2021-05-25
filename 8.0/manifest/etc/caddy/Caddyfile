@@ -1,0 +1,26 @@
+:80, :{$PORT} {
+    root * /app/{$PUBLIC_DIR}
+
+    reverse_proxy /php-fpm-status 127.0.0.1:9000 {
+        transport fastcgi {
+            split .php
+        }
+    }
+
+    php_fastcgi 127.0.0.1:9000
+    file_server
+
+    header / {
+        X-XSS-Protection "1; mode=block"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "ALLOW"
+    }
+
+    log {
+        output stdout
+        format console
+    }
+
+    push
+    encode gzip
+}

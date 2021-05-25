@@ -25,7 +25,7 @@ ENV PUBLIC_DIR=$PUBLIC_DIR
 ENV REQUIRED_PACKAGES="git make zlib-dev libzip-dev zip curl supervisor pcre linux-headers gettext-dev mysql-dev postgresql-dev rabbitmq-c php7-amqp icu libsodium-dev oniguruma-dev freetype-dev libpng-dev libjpeg-turbo-dev libxml2-dev libacl libmagic imagemagick-dev imagemagick jpegoptim optipng pngquant"
 ENV DEVELOPMENT_PACKAGES="autoconf g++ openssh-client tar python3 py-pip pcre-dev rabbitmq-c-dev icu-dev"
 ENV PECL_PACKAGES="redis amqp apcu mongodb imagick"
-ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif sodium gd sysvmsg sysvsem sysvshm"
+ENV EXT_PACKAGES="zip sockets pdo_mysql pdo_pgsql bcmath opcache mbstring iconv gettext intl exif sodium gd sysvmsg sysvsem sysvshm pcntl"
 
 ENV DOCKER=true
 ENV COMPOSER_ALLOW_SUPERUSER 1
@@ -35,7 +35,7 @@ ENV COMPOSER_CACHE_DIR /tmp
 WORKDIR /app
 
 # Copying manifest files to host
-COPY ./manifest /
+COPY ./7.4/manifest /
 
 # Caddy
 COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
@@ -63,6 +63,20 @@ RUN docker-php-ext-install $EXT_PACKAGES
 # Install Pecl Packages
 RUN yes '' | pecl install -f $PECL_PACKAGES
 RUN docker-php-ext-enable $PECL_PACKAGES
+
+# MaxMind
+RUN apk add --no-cache libmaxminddb \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS git libmaxminddb-dev \
+    && git clone https://github.com/maxmind/MaxMind-DB-Reader-php.git \
+    && ( \
+      cd MaxMind-DB-Reader-php/ext \
+      && phpize \
+      && ./configure \
+      && make \
+      && make install \
+    ) \
+    && rm -r MaxMind-DB-Reader-php \
+    && docker-php-ext-enable maxminddb
 
 # Delete Non-Required Packages
 RUN apk del $DEVELOPMENT_PACKAGES
