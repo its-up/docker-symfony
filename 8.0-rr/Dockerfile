@@ -10,7 +10,7 @@ FROM ${RR_IMAGE} as rr
 # -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
-FROM php:${PHP_VERSION}-cli-alpine
+FROM php:${PHP_VERSION}-cli-alpine3.13
 
 ARG PORT=9001
 ARG PUBLIC_DIR=public
