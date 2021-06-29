@@ -1,7 +1,7 @@
 # https://circleci.com/orbs/registry/orb/circleci/docker
 version: 2.1
 orbs:
-    docker: circleci/docker@0.5.18
+    docker: circleci/docker@1.6.0
 workflows:
     build_and_publish_docker_image:
         jobs:
