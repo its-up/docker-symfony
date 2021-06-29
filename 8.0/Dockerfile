@@ -42,10 +42,6 @@ COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 # Composer install
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Fix - https://github.com/docker-library/php/issues/1130
-RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories
-RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/community/ >> /etc/apk/repositories
-
 # Install Packages
 RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
 
