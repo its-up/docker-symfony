@@ -10,7 +10,7 @@ FROM ${RR_IMAGE} as rr
 # -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
-FROM php:${PHP_VERSION}-cli-alpine
+FROM php:${PHP_VERSION}-cli-alpine3.13
 
 ARG PORT=9001
 ARG PUBLIC_DIR=public
@@ -39,6 +39,10 @@ COPY --from=rr /usr/bin/rr /usr/bin/rr
 
 # Copy Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Fix - https://github.com/docker-library/php/issues/1130
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/community/ >> /etc/apk/repositories
 
 # Install Packages
 RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES

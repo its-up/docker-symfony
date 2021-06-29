@@ -13,7 +13,7 @@ FROM caddy:$CADDY_VERSION
 # -----------------------------------------------------
 # App Itself
 # -----------------------------------------------------
-FROM php:$PHP_VERSION-fpm-alpine
+FROM php:$PHP_VERSION-fpm-alpine3.13
 
 ARG PORT=9001
 ARG PUBLIC_DIR=public
@@ -41,6 +41,10 @@ COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 
 # Composer install
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Fix - https://github.com/docker-library/php/issues/1130
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories
+RUN echo http://dl-cdn.alpinelinux.org/alpine/edge/community/ >> /etc/apk/repositories
 
 # Install Packages
 RUN apk add --update --no-cache $REQUIRED_PACKAGES $DEVELOPMENT_PACKAGES
