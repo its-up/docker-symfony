@@ -57,12 +57,12 @@ ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 RUN if [[ -z "$NO_FREETYPE" ]]; then \
     docker-php-ext-configure gd --with-freetype --with-jpeg; fi
 
-# Install Non-Pecl Packages
-RUN docker-php-ext-install $EXT_PACKAGES
-
 # Install Pecl Packages
 RUN yes '' | pecl install -f $PECL_PACKAGES
 RUN docker-php-ext-enable $PECL_PACKAGES
+
+# Install Non-Pecl Packages
+RUN docker-php-ext-install $EXT_PACKAGES
 
 # MaxMind
 RUN apk add --no-cache libmaxminddb \
